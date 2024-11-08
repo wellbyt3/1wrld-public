@@ -29,8 +29,8 @@ struct DAOInputConfig {
 }
 
 struct TierConfig {
-    uint256 amount; // max amount of members allowed in this tier
+    uint256 amount; 
     uint256 price;
     uint256 power;
-    uint256 minted; // amount tht has been minted so far (starts at 0)
+    uint256 minted; 
 }

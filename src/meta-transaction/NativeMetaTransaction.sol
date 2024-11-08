@@ -3,8 +3,6 @@
 pragma solidity 0.8.22;
 import { EIP712Base } from "./EIP712Base.sol";
 
-
-// @audit-check test —  verify that the expected signer is the actual signer here in
 contract NativeMetaTransaction is EIP712Base {
     bytes32 private constant META_TRANSACTION_TYPEHASH = keccak256(
         bytes(
@@ -97,7 +95,6 @@ contract NativeMetaTransaction is EIP712Base {
         uint8 sigV
     ) internal view returns (bool) {
         require(signer != address(0), "NativeMetaTransaction: INVALID_SIGNER");
-        // @audit-issue I think this is susceptible to replay attacks because they aren't forcing S
         return
             signer ==
             ecrecover(

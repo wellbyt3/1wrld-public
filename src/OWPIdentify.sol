@@ -9,7 +9,6 @@ import "../lib/openzeppelin-contracts/contracts/token/ERC1155/extensions/ERC1155
 import {NativeMetaTransaction} from "./meta-transaction/NativeMetaTransaction.sol";
 import "../lib/openzeppelin-contracts/contracts/utils/Strings.sol";
 
-// @note appears to be using an NFT (1155) as a way to store KYC
 contract OWPIdentity is ERC1155, AccessControl, ERC1155Burnable, ERC1155Supply, NativeMetaTransaction {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     using Strings for uint256;

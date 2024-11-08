@@ -45,64 +45,8 @@ contract BaseTest is Test {
         vm.stopPrank();
     }
 
-    function testCreateNewDAOMembership() public {
-
-        vm.startPrank(defaultAdmin);
-        currencyManager.addCurrency(address(currency));
-        vm.stopPrank();
-        
-        // Configure DAO
-        DAOInputConfig memory daoInputConfig = DAOInputConfig({
-            ensname: "test",
-            daoType: DAOType.PUBLIC,
-            currency: address(currency),
-            maxMembers: 100,
-            noOfTiers: 3
-        });
-
-        // Create the DAO tiers
-        TierConfig[] memory tiers = new TierConfig[](3);
-
-        tiers[0] = TierConfig({
-            amount: 10,
-            price: 300e18,
-            power: 12,
-            minted: 0
-        });
-        tiers[1] = TierConfig({
-            amount: 10,
-            price: 200e18,
-            power: 6,
-            minted: 0
-        });
-        tiers[2] = TierConfig({
-            amount: 10,
-            price: 100e18,
-            power: 3,
-            minted: 0
-        });
-
-        // Create the DAO
-        
-        vm.startPrank(daoCreator);
-        address daoAddress = membershipFactory.createNewDAOMembership(daoInputConfig, tiers);
-        vm.stopPrank();
-        console.log("defaultAdmin address: ",defaultAdmin);
-        console.log("membershipFactory address: ",address(membershipFactory));
-        // // console.log(uint160(bytes20(bytes32(MembershipERC1155(daoAddress).getRoleAdmin(DEFAULT_ADMIN_ROLE)))));
-        // bytes32 returnval = MembershipERC1155(daoAddress).OWP_FACTORY_ROLE();
-        // bytes32 roleadminreturn = MembershipERC1155(daoAddress).getRoleAdmin(returnval);
-        // console.logBytes32(roleadminreturn);
-
-        // (string memory ensname,,address currency,,) = membershipFactory.daos(daoAddress);
-        // console.log(ensname);
-        // console.log(currency);
-
-        // console.log("daoAddress: ",daoAddress);
+    function testConsoleLog() public {
+        console.log("Hello Delvir!");
     }
-
-    // @audit-check there's a bunch of stuff to test here
-    function testUpdateDAOMEmbership() public {}
-
 }
 

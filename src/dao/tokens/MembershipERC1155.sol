@@ -12,7 +12,6 @@ import "forge-std/Test.sol";
 
 /// @title Membership ERC1155 Token
 /// @notice This contract allows the creation and management of a DAO membership NFT that supports profit sharing.
-// @note remember, this is the implementation contract, but storage is in the proxy contract.
 contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMembershipERC1155 {
     using SafeERC20 for IERC20;
     using Strings for uint256;
@@ -22,9 +21,9 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
 
     string private _name;
     string private _symbol;
-    address public creator; // the creator who called createNewDAOMembership()
-    address public currency; // the token (must be whitelisted)
-    uint256 public totalSupply; // weighted total supply of NFTs
+    address public creator; 
+    address public currency; 
+    uint256 public totalSupply; 
 
     uint256 public totalProfit;
     mapping(address => uint256) internal lastProfit;
@@ -51,27 +50,19 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
         creator = creator_;
         currency = currency_;
         _setURI(uri_);
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender); // this is the membershipFactory
-        console.logBytes32(DEFAULT_ADMIN_ROLE); // 0x00000
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        console.logBytes32(DEFAULT_ADMIN_ROLE); 
         console.log(msg.sender);
         _grantRole(DAO_CREATOR, creator_);
-        _grantRole(OWP_FACTORY_ROLE, msg.sender); // this is the membershipFactory
+        _grantRole(OWP_FACTORY_ROLE, msg.sender); 
     }
 
     /// @notice Mint a new token
     /// @param to The address to mint tokens to
     /// @param tokenId The token ID to mint
     /// @param amount The amount of tokens to mint
-    // @note called either by joinDao or upgradeTier in membershipFactory
     function mint(address to, uint256 tokenId, uint256 amount) external override onlyRole(OWP_FACTORY_ROLE) {
-        totalSupply += amount * 2 ** (6 - tokenId); // Update total supply with weight
-        // 1 * 2 ** (6 - 6) = 1
-        // 1 * 2 ** (6 - 5) = 2
-        // 1 * 2 ** (6 - 4) = 4
-        // 1 * 2 ** (6 - 3) = 8
-        // 1 * 2 ** (6 - 2) = 16
-        // 1 * 2 ** (6 - 1) = 32
-        // 1 * 2 ** (6 - 0) = 64
+        totalSupply += amount * 2 ** (6 - tokenId); 
         _mint(to, tokenId, amount, "");
     }
 
@@ -79,26 +70,19 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
     /// @param from The address from which tokens will be burned
     /// @param tokenId The token ID to burn
     /// @param amount The amount of tokens to burn
-    // @note only callable through upgradeTier() from membershipFactory
+
     function burn(address from, uint256 tokenId, uint256 amount) external onlyRole(OWP_FACTORY_ROLE) {
         burn_(from, tokenId, amount);
     }
 
     function burn_(address from, uint256 tokenId, uint256 amount) internal {
-        totalSupply -= amount * 2 ** (6 - tokenId); // Update total supply with weight
-        // 2 * 2 ** (6 - 6) = 2
-        // 2 * 2 ** (6 - 5) = 4
-        // 2 * 2 ** (6 - 4) = 8
-        // 2 * 2 ** (6 - 3) = 16
-        // 2 * 2 ** (6 - 2) = 32
-        // 2 * 2 ** (6 - 1) = 64
-        // 2 * 2 ** (6 - 0) = 128
+        totalSupply -= amount * 2 ** (6 - tokenId); 
+        
         _burn(from, tokenId, amount);
     }
 
     /// @notice Burn all tokens of a single user
     /// @param from The address from which tokens will be burned
-    // @audit-check test this
     function burnBatch(address from) public onlyRole(OWP_FACTORY_ROLE) {
         for (uint256 i = 0; i < 7; ++i) {
             uint256 amount = balanceOf(from, i);
@@ -110,7 +94,6 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
 
     /// @notice Burn all tokens of multiple users
     /// @param froms The addresses from which tokens will be burned
-    // @audit-check test this
     function burnBatchMultiple(address[] memory froms)
         public
         onlyRole(OWP_FACTORY_ROLE)
@@ -155,7 +138,6 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
     /// @notice Checks if the contract supports an interface
     /// @param interfaceId The interface identifier, as specified in ERC-165
     /// @return True if the contract supports the interface
-    // @audit-check this is only really useful when callExternalContract is used.
     function supportsInterface(bytes4 interfaceId)
         public view override(ERC1155Upgradeable, AccessControlUpgradeable) returns (bool) {
         return
